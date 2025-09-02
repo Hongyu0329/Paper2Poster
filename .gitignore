@@ -1,4 +1,6 @@
 .env
+.pdf/
+.pptx/
 .vscode/
 Paper2Poster/
 ablations/

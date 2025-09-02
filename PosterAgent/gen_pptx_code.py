@@ -17,6 +17,23 @@ def initialize_poster_code(width, height, slide_object_name, presentation_object
 
     return code
 
+def initialize_poster_from_template(template_path, slide_object_name, presentation_object_name, utils_functions):
+    code = utils_functions
+    code += fr'''
+# Load poster from template: {presentation_object_name}
+{presentation_object_name} = Presentation("{template_path}")
+
+# Get first slide from template: {slide_object_name}
+{slide_object_name} = {presentation_object_name}.slides[0]
+
+# Clear text from template placeholders while preserving shapes
+for shape in {slide_object_name}.shapes:
+    if shape.has_text_frame:
+        shape.text_frame.clear()
+'''
+
+    return code
+
 def save_poster_code(output_file, utils_functions, presentation_object_name):
     code = utils_functions
     code = fr'''
@@ -165,9 +182,14 @@ def generate_poster_code(
     check_overflow=False,
     theme=None,
     tmp_dir='tmp',
+    template_path=None,
 ):
     code = ''
-    code += initialize_poster_code(slide_width, slide_height, slide_object_name, presentation_object_name, utils_functions)
+    if template_path:
+        # Load from template instead of creating blank
+        code += initialize_poster_from_template(template_path, slide_object_name, presentation_object_name, utils_functions)
+    else:
+        code += initialize_poster_code(slide_width, slide_height, slide_object_name, presentation_object_name, utils_functions)
 
     if theme is None:
         panel_visible = visible
